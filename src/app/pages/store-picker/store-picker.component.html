@@ -1,0 +1,14 @@
+<div class="store-picker">
+  <div class="store-picker-content">
+    <div class="store-selector">
+      <h2>Please Enter A Store Name</h2>
+      <input
+        type="text"
+        placeholder="Store Name"
+        [value]="defaultValue"
+        #storeId
+      />
+      <button type="button" (click)="btnVisitStore_click(storeId.value)">Visit Store -></button>
+    </div>
+  </div>
+</div>
