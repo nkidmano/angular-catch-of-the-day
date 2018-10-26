@@ -5,13 +5,7 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './inventory.component.html'
 })
 export class InventoryComponent implements OnInit {
+  constructor() {}
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-
-  public btnLoadSampleFishes_click() {
-
-  }
+  ngOnInit() {}
 }

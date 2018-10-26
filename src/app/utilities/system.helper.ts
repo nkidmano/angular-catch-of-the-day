@@ -1,4 +1,7 @@
 export class SystemHelper {
+  public static storeId: string;
+  public static userId: string;
+
   public static rando(arr: any) {
     return arr[Math.floor(Math.random() * arr.length)];
   }

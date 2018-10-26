@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { WebserverService } from 'src/app/services/webserver.service';
+import { SystemHelper } from 'src/app/utilities/system.helper';
 
 @Component({
   selector: 'app-add-fish-form',
@@ -6,9 +8,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AddFishFormComponent implements OnInit {
 
-  constructor() { }
+  constructor(private _webService: WebserverService) { }
 
   ngOnInit() {
   }
 
+  public btnLoadSampleFishes_click() {
+    this._webService.loadSampleFishes(SystemHelper.storeId);
+  }
 }
