@@ -4,6 +4,7 @@ import { Fish } from 'src/app/models/fish.model';
 import { Store } from 'src/app/models/store.model';
 import { WebserverService } from 'src/app/services/webserver.service';
 import { SystemHelper } from 'src/app/utilities/system.helper';
+import { CACHED } from 'src/app/utilities/system.constants';
 
 @Component({
   selector: 'app-store',
@@ -12,9 +13,13 @@ import { SystemHelper } from 'src/app/utilities/system.helper';
 export class StoreComponent implements OnInit {
   public storeData: StoreData;
   private _storeId: string;
+  private _userId: string;
   private _order = {};
 
-  constructor(private _webService: WebserverService, private _route: ActivatedRoute) {
+  constructor(
+    private _webService: WebserverService,
+    private _route: ActivatedRoute
+  ) {
     this._storeId = this._getStoreId();
   }
 
@@ -32,16 +37,25 @@ export class StoreComponent implements OnInit {
 
   private _callAPIGetStoreData() {
     this._webService.getStoreData((result: any) => {
-      const data: Store = result;
-      if (data) {
-        const fishes = [];
-        const owner = data.owner ? data.owner : '';
-        Object.keys(data.fishes).map(key => {
-          fishes.push(data.fishes[key]);
-        });
-        this.storeData = { fishes, owner };
-      }
+      this._handlingGetStoreData(result);
     });
+  }
+
+  private _handlingGetStoreData(result: any) {
+    const data: Store = result;
+    if (data) {
+      const fishes = [];
+      const owner = data.owner ? data.owner : '';
+      Object.keys(data.fishes).map(key => {
+        fishes.push(data.fishes[key]);
+      });
+      this.storeData = { fishes, owner };
+    }
+    if (this.storeData.owner === '') {
+      if (this._isUserCached()) {
+        this._webService.setOwner(this._userId);
+      }
+    }
   }
 
   private _saveStoreCached() {
@@ -51,16 +65,31 @@ export class StoreComponent implements OnInit {
     }
   }
 
+  private _saveUserCached() {
+    if (!this._isUserCached()) {
+      localStorage.setItem(CACHED.USER_ID, this._userId);
+    }
+  }
+
   private _isStoreCached() {
     const storeCached = localStorage.getItem(this._storeId);
-    if (storeCached === undefined
-      || storeCached === null
-      || storeCached === '') {
-        return false;
+    if (
+      storeCached === undefined ||
+      storeCached === null ||
+      storeCached === ''
+    ) {
+      return false;
     }
     return true;
   }
 
+  private _isUserCached() {
+    const userCached = localStorage.getItem(this._userId);
+    if (userCached === undefined || userCached === null || userCached === '') {
+      return false;
+    }
+    return true;
+  }
 
   private _getStoreId() {
     const storeId = this._route.snapshot.params['storeId'];
