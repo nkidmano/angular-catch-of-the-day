@@ -1,7 +1,10 @@
 <div class="inventory">
   <div class="inventory-content">
-    <app-login></app-login>
-    <app-edit-fish-form></app-edit-fish-form>
-    <app-add-fish-form></app-add-fish-form>
+    <app-login [owner]="owner"></app-login>
+    <p>Sorry you'are not the owner!</p>
+    <ng-container>
+      <app-edit-fish-form></app-edit-fish-form>
+      <app-add-fish-form></app-add-fish-form>
+    </ng-container>
   </div>
 </div>

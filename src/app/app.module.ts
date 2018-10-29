@@ -17,6 +17,7 @@ import { OrderComponent } from './components/order/order.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { StorePickerComponent } from './pages/store-picker/store-picker.component';
 import { StoreComponent } from './pages/store/store.component';
+import { CentUSDPipe } from './pipes/cent-usd.pipe';
 
 
 @NgModule({
@@ -31,7 +32,8 @@ import { StoreComponent } from './pages/store/store.component';
     AddFishFormComponent,
     HeaderComponent,
     LoginComponent,
-    OrderComponent
+    OrderComponent,
+    CentUSDPipe
   ],
   imports: [
     BrowserModule,

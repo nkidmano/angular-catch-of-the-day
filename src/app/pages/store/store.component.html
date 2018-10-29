@@ -2,9 +2,9 @@
   <div class="menu">
     <app-header></app-header>
     <ul class="fishes">
-      <app-fish></app-fish>
+      <app-fish *ngFor="let fish of storeData?.fishes" [fish]="fish"></app-fish>
     </ul>
   </div>
   <app-order></app-order>
-  <app-inventory></app-inventory>
+  <app-inventory [owner]="storeData?.owner"></app-inventory>
 </div>

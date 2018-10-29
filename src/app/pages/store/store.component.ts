@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Fish } from 'src/app/models/fish.model';
+import { Store } from 'src/app/models/store.model';
+import { WebserverService } from 'src/app/services/webserver.service';
 import { SystemHelper } from 'src/app/utilities/system.helper';
 
 @Component({
@@ -7,10 +10,11 @@ import { SystemHelper } from 'src/app/utilities/system.helper';
   templateUrl: './store.component.html'
 })
 export class StoreComponent implements OnInit {
+  public storeData: StoreData;
   private _storeId: string;
   private _order = {};
 
-  constructor(private _route: ActivatedRoute) {
+  constructor(private _webService: WebserverService, private _route: ActivatedRoute) {
     this._storeId = this._getStoreId();
   }
 
@@ -23,6 +27,21 @@ export class StoreComponent implements OnInit {
       SystemHelper.storeId = this._storeId;
       this._saveStoreCached();
     }
+    this._callAPIGetStoreData();
+  }
+
+  private _callAPIGetStoreData() {
+    this._webService.getStoreData((result: any) => {
+      const data: Store = result;
+      if (data) {
+        const fishes = [];
+        const owner = data.owner ? data.owner : '';
+        Object.keys(data.fishes).map(key => {
+          fishes.push(data.fishes[key]);
+        });
+        this.storeData = { fishes, owner };
+      }
+    });
   }
 
   private _saveStoreCached() {
@@ -42,8 +61,14 @@ export class StoreComponent implements OnInit {
     return true;
   }
 
+
   private _getStoreId() {
     const storeId = this._route.snapshot.params['storeId'];
     return storeId;
   }
+}
+
+interface StoreData {
+  fishes: Fish[];
+  owner: String;
 }
