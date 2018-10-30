@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { auth } from 'firebase';
-import { LOGIN_PROVIDER } from '../utilities/system.constants';
-import { SystemHelper } from '../utilities/system.helper';
+import { Fish } from '../models/fish.model';
+import { CACHED, LOGIN_PROVIDER } from '../utilities/system.constants';
 import { FISHES } from '../utilities/system.sample-fish';
 
 @Injectable({
@@ -12,12 +12,18 @@ import { FISHES } from '../utilities/system.sample-fish';
 export class WebserverService {
   constructor(private _db: AngularFireDatabase, private _auth: AngularFireAuth) {}
 
-  public loadSampleFishes() {
-    this._db.list(`/${SystemHelper.storeId}`).set('fishes', FISHES);
+  public loadSampleFishes(storeId: string) {
+    this._db.list(`/${storeId}`).set(CACHED.FISHES, FISHES);
   }
 
-  public getFishes() {
-    return this._db.list(`/${SystemHelper.storeId}/fishes`).valueChanges();
+  public getStoreData(storeId: string, serviceCallback: (result: any) => void) {
+    this._db.object(`/${storeId}`).valueChanges().subscribe(result => {
+      serviceCallback(result);
+    });
+  }
+
+  public addFish(storeId: string, fishId: string, fish: Fish) {
+    this._db.list(`/${storeId}/${fishId}`).push(fish);
   }
 
   public login(provider: string, serviceCallback: (result: any) => void) {
@@ -41,16 +47,8 @@ export class WebserverService {
 
   public logout(serviceCallback: () => void) {
     this._auth.auth.signOut()
-      .then(() => serviceCallback());
-  }
-
-  public getStoreData(serviceCallback: (result: any) => void) {
-    this._db.object(`/${SystemHelper.storeId}`).valueChanges().subscribe(result => {
-      serviceCallback(result);
-    });
-  }
-
-  public setOwner(userId: string) {
-    this._db.list(`/${SystemHelper.storeId}`).set('owner', userId);
+      .then(() => {
+        serviceCallback();
+      });
   }
 }

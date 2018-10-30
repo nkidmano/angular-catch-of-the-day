@@ -1,6 +1,15 @@
-<p>
-  add-fish-form works!
-</p>
+<form class="fish-edit" #f="ngForm" (ngSubmit)="formAddFish_submit(f.value)">
+  <input name="name" type="text" placeholder="Name" ngModel #name="ngModel">
+  <input name="price" type="text" placeholder="Price" ngModel #price="ngModel">
+  <select name="status" type="text" placeholder="Status" ngModel #status="ngModel">
+    <option value="available">Fresh!</option>
+    <option value="unavailable">Sold Out!</option>
+  </select>
+  <textarea name="desc" placeholder="Description" ngModel #desc="ngModel"></textarea>
+  <input name="image" type="text" placeholder="Image" ngModel #image="ngModel">
+  <button>+ Add Fish</button>
+</form>
+
 <button type="button" (click)="btnLoadSampleFishes_click()">
-    Load Sample Fishes
+  Load Sample Fishes
 </button>

@@ -1,5 +1,6 @@
 export enum CACHED {
-  USER_ID = 'user_id'
+  USER_ID = 'user_id',
+  FISHES = 'fishes'
 }
 
 export enum FISH_STATUS {

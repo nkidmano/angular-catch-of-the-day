@@ -1,26 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Fish } from 'src/app/models/fish.model';
+import { AppComponent } from 'src/app/app.component';
 import { Store } from 'src/app/models/store.model';
 import { WebserverService } from 'src/app/services/webserver.service';
 import { SystemHelper } from 'src/app/utilities/system.helper';
-import { CACHED } from 'src/app/utilities/system.constants';
 
 @Component({
   selector: 'app-store',
   templateUrl: './store.component.html'
 })
-export class StoreComponent implements OnInit {
-  public storeData: StoreData;
-  private _storeId: string;
-  private _userId: string;
-  private _order = {};
+export class StoreComponent extends AppComponent implements OnInit {
+  public store: Store;
 
-  constructor(
-    private _webService: WebserverService,
-    private _route: ActivatedRoute
-  ) {
-    this._storeId = this._getStoreId();
+  constructor(protected webService: WebserverService, private _route: ActivatedRoute) {
+    super(webService);
   }
 
   ngOnInit() {
@@ -28,76 +21,31 @@ export class StoreComponent implements OnInit {
   }
 
   private _init() {
-    if (this._storeId) {
-      SystemHelper.storeId = this._storeId;
-      this._saveStoreCached();
+    const storeId = this._getStoreId();
+    if (storeId) {
+      this.saveStoreInfo(storeId);
+      this._callAPIGetStoreData();
     }
-    this._callAPIGetStoreData();
   }
 
   private _callAPIGetStoreData() {
-    this._webService.getStoreData((result: any) => {
+    this.webService.getStoreData(SystemHelper.storeId, (result: any) => {
       this._handlingGetStoreData(result);
     });
   }
 
   private _handlingGetStoreData(result: any) {
-    const data: Store = result;
-    if (data) {
+    if (result) {
       const fishes = [];
-      const owner = data.owner ? data.owner : '';
-      Object.keys(data.fishes).map(key => {
-        fishes.push(data.fishes[key]);
+      const userId = result.userId ? result.userId : '';
+      Object.keys(result.fishes).map(key => {
+        fishes.push(result.fishes[key]);
       });
-      this.storeData = { fishes, owner };
+      this.store = { fishes, userId };
     }
-    if (this.storeData.owner === '') {
-      if (this._isUserCached()) {
-        this._webService.setOwner(this._userId);
-      }
-    }
-  }
-
-  private _saveStoreCached() {
-    if (!this._isStoreCached()) {
-      this._order = {};
-      localStorage.setItem(this._storeId, JSON.stringify(this._order));
-    }
-  }
-
-  private _saveUserCached() {
-    if (!this._isUserCached()) {
-      localStorage.setItem(CACHED.USER_ID, this._userId);
-    }
-  }
-
-  private _isStoreCached() {
-    const storeCached = localStorage.getItem(this._storeId);
-    if (
-      storeCached === undefined ||
-      storeCached === null ||
-      storeCached === ''
-    ) {
-      return false;
-    }
-    return true;
-  }
-
-  private _isUserCached() {
-    const userCached = localStorage.getItem(this._userId);
-    if (userCached === undefined || userCached === null || userCached === '') {
-      return false;
-    }
-    return true;
   }
 
   private _getStoreId() {
-    const storeId = this._route.snapshot.params['storeId'];
-    return storeId;
+    return this._route.snapshot.params['storeId'];
   }
-}
-
-interface StoreData {
-  fishes: Fish[];
-  owner: String;
 }

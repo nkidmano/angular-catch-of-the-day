@@ -1,4 +1,6 @@
+import { Fish } from './fish.model';
+
 export interface Store {
-  fishes: Object;
-  owner: String;
+  fishes: Fish[];
+  userId: String;
 }
